@@ -1,0 +1,90 @@
+2025-12-15 00:37:32,655 [INFO] Camera initialized. Actual properties: width=640.0, height=480.0, fps=30.0
+2025-12-15 00:37:33,089 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-15 00:37:35,765 [WARNING] Detection inference time 2201.2ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-15 00:37:54,862 [INFO] Camera released.
+2025-12-15 00:38:32,981 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-15 00:40:13,873 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-15 00:40:13,893 [INFO] Video source opened: D:\Desktop\Projects\Hen_Gaurd\caught.webm
+2025-12-15 00:40:15,736 [WARNING] Detection inference time 1797.1ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-15 00:40:52,402 [WARNING] Failed to read frame or end of video reached
+2025-12-15 00:40:52,471 [INFO] Video processing finished
+2025-12-16 16:58:55,809 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:58:55,809 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:58:55,865 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-16 16:58:55,865 [ERROR] Camera is not alive. Read aborted. Backing off for 1 seconds.
+2025-12-16 16:58:56,866 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:58:56,866 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:58:56,866 [ERROR] Camera is not alive. Read aborted. Backing off for 2 seconds.
+2025-12-16 16:58:58,867 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:58:58,867 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:58:58,867 [ERROR] Camera is not alive. Read aborted. Backing off for 4 seconds.
+2025-12-16 16:59:02,868 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:59:02,869 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:59:02,869 [ERROR] Camera is not alive. Read aborted. Backing off for 8 seconds.
+2025-12-16 16:59:10,870 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:59:10,870 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:59:10,870 [ERROR] Camera is not alive. Read aborted. Backing off for 16 seconds.
+2025-12-16 16:59:26,871 [ERROR] Camera init failed: Unable to open camera source.
+2025-12-16 16:59:26,872 [ERROR] Camera initialization error: Camera init failed
+2025-12-16 16:59:26,872 [ERROR] Camera is not alive. Read aborted. Backing off for 32 seconds.
+2025-12-16 16:59:34,220 [INFO] Camera released.
+2025-12-16 17:04:21,089 [INFO] Camera initialized. Actual properties: width=640.0, height=480.0, fps=7.5
+2025-12-16 17:04:21,144 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-16 17:04:25,035 [WARNING] Detection inference time 3028.2ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:18:01,756 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.48.77.151:5000
+2025-12-17 08:18:01,756 [INFO] [33mPress CTRL+C to quit[0m
+2025-12-17 08:18:02,722 [INFO] Camera initialized. Actual properties: width=640.0, height=480.0, fps=7.5
+2025-12-17 08:18:02,900 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-17 08:18:04,834 [WARNING] Detection inference time 1053.1ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:18:15,744 [WARNING] Detection inference time 207.8ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:18:15,980 [WARNING] Detection inference time 228.7ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:18:16,206 [WARNING] Detection inference time 205.7ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:18:52,213 [INFO] 10.48.77.180 - - [17/Dec/2025 08:18:52] "[33mGET / HTTP/1.1[0m" 404 -
+2025-12-17 08:18:52,300 [INFO] 10.48.77.180 - - [17/Dec/2025 08:18:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-12-17 08:19:05,043 [INFO] 10.48.77.180 - - [17/Dec/2025 08:19:05] "[33mGET / HTTP/1.1[0m" 404 -
+2025-12-17 08:19:30,741 [INFO] 10.48.77.180 - - [17/Dec/2025 08:19:30] "GET /video HTTP/1.1" 200 -
+2025-12-17 08:19:56,742 [WARNING] Detection inference time 200.1ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:20:00,981 [WARNING] Detection inference time 223.6ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:20:01,206 [WARNING] Detection inference time 223.7ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:20:01,414 [WARNING] Detection inference time 207.0ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:20:01,653 [WARNING] Detection inference time 236.9ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:20:05,165 [WARNING] Detection inference time 201.6ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:24:44,305 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.48.77.151:5000
+2025-12-17 08:24:44,305 [INFO] [33mPress CTRL+C to quit[0m
+2025-12-17 08:24:45,260 [INFO] Camera initialized. Actual properties: width=1280.0, height=720.0, fps=7.5
+2025-12-17 08:24:45,310 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-17 08:24:46,340 [WARNING] Detection inference time 291.6ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:24:52,726 [INFO] 10.48.77.180 - - [17/Dec/2025 08:24:52] "GET /video HTTP/1.1" 200 -
+2025-12-17 08:26:46,037 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.48.77.151:5000
+2025-12-17 08:26:46,037 [INFO] [33mPress CTRL+C to quit[0m
+2025-12-17 08:26:46,980 [INFO] Camera initialized. Actual properties: width=1280.0, height=720.0, fps=7.5
+2025-12-17 08:26:47,030 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-17 08:26:48,062 [WARNING] Detection inference time 295.2ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:26:48,701 [INFO] 10.48.77.180 - - [17/Dec/2025 08:26:48] "GET /video HTTP/1.1" 200 -
+2025-12-17 08:27:53,916 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.48.77.151:5000
+2025-12-17 08:27:53,916 [INFO] [33mPress CTRL+C to quit[0m
+2025-12-17 08:27:54,872 [INFO] Camera initialized. Actual properties: width=1280.0, height=720.0, fps=7.5
+2025-12-17 08:27:54,922 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-17 08:27:55,952 [WARNING] Detection inference time 292.3ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:28:05,604 [INFO] 10.48.77.180 - - [17/Dec/2025 08:28:05] "GET /video HTTP/1.1" 200 -
+2025-12-17 08:31:11,958 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.48.77.151:5000
+2025-12-17 08:31:11,958 [INFO] [33mPress CTRL+C to quit[0m
+2025-12-17 08:31:12,905 [INFO] Camera initialized. Actual properties: width=1280.0, height=720.0, fps=7.5
+2025-12-17 08:31:12,954 [INFO] Model loaded. For Pi, use yolov8n.pt and imgsz <= 320 for best speed. Monitor memory if using persist=True.
+2025-12-17 08:31:13,986 [WARNING] Detection inference time 293.7ms exceeds 200ms. Consider reducing imgsz or using a smaller model.
+2025-12-17 08:31:14,002 [INFO] 10.48.77.180 - - [17/Dec/2025 08:31:14] "GET /video HTTP/1.1" 200 -
