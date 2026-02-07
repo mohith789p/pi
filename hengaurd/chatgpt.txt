@@ -1,0 +1,386 @@
+# =========================
+# Directory Structure
+# =========================
+# henguard/
+# ├── main.py
+# ├── config.yaml
+# ├── camera/camera_manager.py
+# ├── inference/detector.py
+# ├── logic/theft_detector.py
+# ├── alerts/alert_manager.py
+# ├── alerts/buzzer.py
+# ├── alerts/gsm_manager.py
+# ├── utils/logger.py
+# └── utils/fs.py
+
+# =========================
+# utils/fs.py
+# =========================
+from pathlib import Path
+
+def safe_mkdir(path: Path):
+    path.mkdir(parents=True, exist_ok=True)
+
+# =========================
+# utils/logger.py
+# =========================
+import logging
+from utils.fs import safe_mkdir
+from pathlib import Path
+
+def setup_logger(log_dir="logs"):
+    safe_mkdir(Path(log_dir))
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        handlers=[
+            logging.FileHandler(f"{log_dir}/henguard.log"),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger("HenGuard")
+
+# =========================
+# camera/camera_manager.py
+# =========================
+import cv2
+
+class CameraManager:
+    def __init__(self, cfg, logger):
+        self.cap = cv2.VideoCapture(cfg['source'])
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, cfg['width'])
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, cfg['height'])
+        self.cap.set(cv2.CAP_PROP_FPS, cfg['fps'])
+        if not self.cap.isOpened():
+            raise RuntimeError("Camera init failed")
+        logger.info("Camera initialized")
+
+    def read(self):
+        return self.cap.read()
+
+    def release(self):
+        self.cap.release()
+
+# =========================
+# inference/detector.py
+# =========================
+from ultralytics import YOLO
+
+class Detector:
+    def __init__(self, cfg, logger):
+        self.model = YOLO(cfg['path'])
+        self.conf = cfg['conf']
+        self.imgsz = cfg['imgsz']
+        logger.info("Model loaded")
+
+    def detect(self, frame):
+        return self.model.track(frame, persist=True,
+                                conf=self.conf,
+                                imgsz=self.imgsz,
+                                verbose=False)
+
+# =========================
+# logic/theft_detector.py
+# =========================
+import numpy as np
+import time
+
+class TheftDetector:
+    def __init__(self, cfg):
+        self.tracks = {}
+        self.cfg = cfg
+
+    def update_track(self, tid, x, y):
+        now = time.time()
+        self.tracks.setdefault(tid, []).append((now, x, y))
+        self.tracks[tid] = self.tracks[tid][-5:]
+
+    def detect(self, humans, hens):
+        for tid, (hx, hy) in humans:
+            track = self.tracks.get(tid, [])
+            if len(track) < 2:
+                continue
+            t0, x0, y0 = track[0]
+            t1, x1, y1 = track[-1]
+            dt = max(t1 - t0, 1e-3)
+            velocity = np.linalg.norm([x1-x0, y1-y0]) / dt
+            nearby = sum(1 for x,y in hens if np.linalg.norm([hx-x, hy-y]) < 120)
+            if velocity > self.cfg['velocity_threshold'] and nearby >= self.cfg['theft_hens']:
+                return True
+        return False
+
+# =========================
+# alerts/buzzer.py
+# =========================
+import RPi.GPIO as GPIO
+import time
+
+class Buzzer:
+    def __init__(self, gpio):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(gpio, GPIO.OUT)
+        self.gpio = gpio
+
+    def beep(self, times=3):
+        for _ in range(times):
+            GPIO.output(self.gpio, GPIO.HIGH)
+            time.sleep(0.2)
+            GPIO.output(self.gpio, GPIO.LOW)
+            time.sleep(0.2)
+
+    def cleanup(self):
+        GPIO.cleanup()
+
+# =========================
+# alerts/gsm_manager.py
+# =========================
+import serial
+import time
+
+class SIM900:
+    def __init__(self, cfg):
+        self.ser = serial.Serial(cfg['port'], cfg['baud'], timeout=1)
+        self.phone = cfg['phone']
+        self._send("AT")
+        self._send("AT+CMGF=1")
+
+    def _send(self, cmd, wait="OK", timeout=5):
+        self.ser.write((cmd+"\r\n").encode())
+        end = time.time()+timeout
+        resp=""
+        while time.time()<end:
+            resp += self.ser.read(self.ser.in_waiting).decode(errors='ignore')
+            if wait in resp:
+                return True
+        return False
+
+    def send_sms(self, msg):
+        if self._send(f'AT+CMGS="{self.phone}"', wait=">"):
+            self.ser.write((msg+"\x1A").encode())
+
+    def cleanup(self):
+        self.ser.close()
+
+# =========================
+# alerts/alert_manager.py
+# =========================
+import threading
+import time
+
+class AlertManager:
+    def __init__(self, buzzer, gsm, cooldown, logger):
+        self.buzzer = buzzer
+        self.gsm = gsm
+        self.cooldown = cooldown
+        self.last = 0
+        self.logger = logger
+
+    def trigger(self, msg):
+        if time.time() - self.last < self.cooldown:
+            return
+        self.last = time.time()
+        threading.Thread(target=self._run, args=(msg,), daemon=True).start()
+
+    def _run(self, msg):
+        self.buzzer.beep()
+        self.gsm.send_sms(msg)
+        self.logger.warning(msg)
+
+# =========================
+# main.py
+# =========================
+import yaml
+import cv2
+from utils.logger import setup_logger
+from camera.camera_manager import CameraManager
+from inference.detector import Detector
+from logic.theft_detector import TheftDetector
+from alerts.buzzer import Buzzer
+from alerts.gsm_manager import SIM900
+from alerts.alert_manager import AlertManager
+
+logger = setup_logger()
+
+with open("config.yaml") as f:
+    cfg = yaml.safe_load(f)
+
+camera = CameraManager(cfg['camera'], logger)
+detector = Detector(cfg['model'], logger)
+theft_logic = TheftDetector(cfg['zones'])
+buzzer = Buzzer(cfg['alerts']['buzzer_gpio'])
+gsm = SIM900(cfg['alerts']['gsm'])
+alert_mgr = AlertManager(buzzer, gsm, cfg['alerts']['cooldown'], logger)
+
+while True:
+    ret, frame = camera.read()
+    if not ret:
+        continue
+    results = detector.detect(frame)
+    humans, hens = [], []
+    if results[0].boxes.id is not None:
+        for box in results[0].boxes:
+            tid = int(box.id)
+            cls = int(box.cls)
+            x1,y1,x2,y2 = map(int, box.xyxy[0])
+            cx,cy=(x1+x2)//2,(y1+y2)//2
+            theft_logic.update_track(tid,cx,cy)
+            if cls==0: humans.append((tid,(cx,cy)))
+            if cls==1: hens.append((cx,cy))
+    if theft_logic.detect(humans, hens):
+        alert_mgr.trigger("HEN THEFT DETECTED")
+    cv2.imshow("HenGuard", results[0].plot())
+    if cv2.waitKey(1)&0xFF==ord('q'):
+        break
+
+camera.release()
+buzzer.cleanup()
+gsm.cleanup()
+cv2.destroyAllWindows()
+
+# =========================
+# README.md
+# =========================
+# HenGuard – Intelligent Poultry Theft Detection System
+
+HenGuard is a Raspberry Pi–based computer vision and alerting system designed to detect poultry theft in real time using a camera, YOLOv8 object detection, motion analysis, and GSM-based alerts.
+
+---
+
+## System Overview
+
+The system follows a strict separation of concerns:
+
+- **Camera Layer** – Captures frames from the Pi Camera
+- **Inference Layer** – Runs YOLOv8 detection and tracking
+- **Logic Layer** – Analyzes motion + proximity to infer theft
+- **Alert Layer** – Triggers buzzer and GSM alerts asynchronously
+
+This architecture avoids blocking the vision loop and ensures long-term reliability.
+
+---
+
+## Features
+
+- Real-time human and hen detection
+- Motion-based theft inference (time-normalized velocity)
+- Configurable thresholds via `config.yaml`
+- Non-blocking alerts (threaded GSM + buzzer)
+- Designed for continuous unattended operation
+
+---
+
+## Hardware Requirements
+
+- Raspberry Pi 4 (recommended)
+- Pi Camera Module / USB Camera
+- SIM900 GSM Module
+- Active SIM card
+- Buzzer
+- External power supply (important for GSM stability)
+
+---
+
+## Software Requirements
+
+- Raspberry Pi OS (64-bit recommended)
+- Python 3.8+
+- Internet access (for initial setup)
+
+---
+
+## Directory Structure
+
+```
+henguard/
+├── main.py
+├── config.yaml
+├── camera/
+│   └── camera_manager.py
+├── inference/
+│   └── detector.py
+├── logic/
+│   └── theft_detector.py
+├── alerts/
+│   ├── alert_manager.py
+│   ├── buzzer.py
+│   └── gsm_manager.py
+├── utils/
+│   ├── fs.py
+│   └── logger.py
+└── logs/
+```
+
+---
+
+## Setup Instructions
+
+### 1. Clone the repository
+```bash
+git clone <repo-url>
+cd henguard
+```
+
+### 2. Install dependencies
+```bash
+pip3 install -r requirements.txt
+```
+
+### 3. Configure the system
+Edit `config.yaml` to set:
+- Camera parameters
+- Model path and confidence
+- GSM port, baud rate, phone number
+- Theft thresholds and alert cooldown
+
+---
+
+## Running the System
+
+```bash
+python3 main.py
+```
+
+Press `q` to exit (for development mode).
+
+---
+
+## Deployment (Recommended)
+
+For production use:
+- Disable GUI rendering
+- Run as a `systemd` service
+- Enable auto-restart on failure
+
+---
+
+## Important Notes
+
+- Model training should be done on a PC or cloud, **not on the Pi**
+- Use ONNX models for better performance on Raspberry Pi
+- Stable power is critical for GSM reliability
+
+---
+
+## Limitations
+
+- Accuracy depends heavily on dataset quality
+- Poor lighting conditions may affect detection
+- GSM alerts depend on network availability
+
+---
+
+## License
+
+This project is intended for academic and research purposes.
+
+
+# =========================
+# requirements.txt
+# =========================
+ultralytics>=8.0.0
+opencv-python
+numpy
+PyYAML
+pyserial
+RPi.GPIO
+

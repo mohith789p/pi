@@ -1,0 +1,23 @@
+camera:
+  source: 0
+  width: 1280
+  height: 720
+  fps: 6
+
+model:
+  path: "models/yolov8n.pt"
+  conf: 0.35
+  imgsz: 256
+
+zones:
+  theft_hens: 2
+  velocity_threshold: 20
+
+alerts:
+  buzzer_gpio: 18
+  cooldown: 60
+  continuous_alarm: true
+  gsm:
+    port: /dev/ttyS0
+    baud: 9600
+    phone: "+91XXXXXXXXXX"
